@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="shortcut icon" href="/img/logo.png">
+<title>Sumin Lecture</title>
+<link rel="stylesheet" type="text/css" href="/css/normalize.css">
+<link rel="stylesheet" type="text/css" href="/css/signIn.css">
+<link rel="stylesheet" type="text/css" href="/css/font.css">
+<script src="/js/jquery.min.js"></script>
+<script>
+$(document).ready(function () {
+	history.replaceState({}, null, location.pathname);
+
+	$("#submit").on('click', function() {
+		submit();
+	});
+});
+	
+function submit() {
+    $.ajax({
+        type: "POST",
+		headers: {
+			'CSRF-Token': '{{csrfToken}}' // or X-CSRF-TOKEN
+		},
+        data: $('#loginFrm').serialize(),
+        success: function(data){ 
+			window.location.href=data.redirect;
+        },
+        error: function(err){
+			message = Array.isArray(err.responseJSON.message) ? err.responseJSON.message[0] : err.responseJSON.message;
+			alert(message);
+        }
+  	});
+}
+
+</script>
+</head>
+<body>
+<!-- wrap :s -->
+	<div id="wrap">
+		<!-- header :s -->
+		{{> header/header_main}}
+		<!-- header :e -->
+
+		<!-- container :s -->
+		<div id="container">
+			<div id="content">
+				<form id="loginFrm" method="post">
+					<fieldset class="findif_form">
+						<legend class="blind">Sign In</legend>
+
+						<label for="id" class="error"></label>
+						<div class="input_row" id="id_area">
+							<span class="input_box">
+								<label for="id" id="label_id_area" class="lbl">ID</label>
+								<input type="text" name="username" placeholder="ID" class="int" maxlength="30" value="">
+							</span>
+						</div>
+						<label for="pw" class="error"></label>
+						<div class="input_row" id="pw_area">
+							<span class="input_box">
+								<label for="pw" id="label_pw_area" class="lbl">Password</label>
+								<input type="password" name="password" placeholder="Password" class="int" maxlength="30" >
+							</span>
+						</div>
+						
+						<div class="login_check">
+							<span class="login_check_box">
+								<input type="checkbox" id="login_chk" name="nvlong" class="" tabindex="9" value="off" onchange="savedLong(this);nclks_chk('login_chk', 'log.keepon', 'log.keepoff',this,event)" onclick="msieblur(this);">
+								<label for="login_chk" id="label_login_chk" class="sp">아이디 저장</label>
+							</span>
+						</div>
+
+						<input id="submit" title="로그인" alt="로그인" value="로그인" class="btn_login" onclick=" ">
+						
+						<div class="find_info">
+							<ul>
+								<li><a href="/auth/agree">회원가입</a></li>
+							</ul>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+		<!-- container :e -->
+
+		<!-- footer :s -->
+		{{> footer/footer_main}}
+		<!-- footer :e	 -->
+
+	
+
+	</div>
+<!-- wrap :e -->
+
+</body>
+</html>

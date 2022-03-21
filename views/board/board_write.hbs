@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="shortcut icon" href="/img/logo.png">
+<title>Sumin</title>
+<link rel="stylesheet" type="text/css" href="/css/normalize.css">
+<link rel="stylesheet" type="text/css" href="/css/layout.css">
+<link rel="stylesheet" type="text/css" href="/css/font.css">
+<script src="/js/jquery.min.js"></script>
+<script src="/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="/js/submenu.js"></script>
+<script type="text/javascript">
+	$(document).ready(function () {
+		$("#submit").on('click', function() {
+			{{#if isModifyPage}}
+				method = 'PATCH';
+				url = '/board/' + {{board.id}};
+			{{else}}
+				method = 'POST';
+				url = '/board';
+			{{/if}}
+			submit(method, url);
+		});
+		$("#cancelBtn").on('click', function() {
+			{{#if isModifyPage}}
+				url = '/board/' + {{board.id}};
+			{{else}}
+				url = '/board/';
+			{{/if}}
+			window.location.href = url;
+		});
+	});
+		
+	function submit(method, url) {
+		$.ajax({
+			url: url,
+			type: method,
+			headers: { 'CSRF-Token': '{{csrfToken}}' },
+			data: new FormData($("#writeFrm")[0]),
+			processData: false,
+			contentType: false,
+			success: function(result){ 
+				window.location.href=result.redirect;
+			},
+			error: function(err){
+				message = Array.isArray(err.responseJSON.message) ? err.responseJSON.message[0] : err.responseJSON.message;
+
+				alert(message);
+			}
+		});
+	}
+</script>
+</head>
+
+<body>
+<!-- wrap :s -->
+	<div id="wrapper">
+
+		<!-- header :s -->
+		{{> header/header}}
+		<!-- header :e -->
+
+
+		<!-- contentsWrap :s -->
+		<div id="contentsWrap">
+
+			<!-- lnbWrap :s -->
+			{{> navbar/lnb_board}}
+			<!-- lnbWrap :e -->
+
+			<!-- container :s -->
+			<div id="container">
+
+				<div class="location">
+					<span class="home"><a href="#"><img src="/img/layout/ico_home.png" alt="홈"></a></span>
+					<span class="arrow">&gt;</span>
+					<a href="#"> <span class="first">게시판</span></a>
+					<span class="arrow">&gt;</span>
+					<a href="#"> <span>게시판 작성</span></a>
+				</div>
+
+				<h3 id="contTi">게시판 작성</h3>
+
+				<!-- 컨텐츠영역 txt :s -->
+				<div id="txt">
+					<form id="writeFrm" name="writeFrm" enctype="multipart/form-data">
+						<h4>게시판 작성</h4>
+						<!-- table :s -->
+						<table class="tbl_basic" style="table-layout:fixed;">
+							<caption>
+								<strong>게시판 작성</strong>
+								<details>
+									<summary>게시판 내용</summary>
+								</details>
+							</caption>
+							<tbody>
+								<tr>
+									<td class="trw" width="200">제목</td>
+									<td>
+										<input class="inputText2" type="text" style="width:100%" name="title" 
+											value="{{#if isModifyPage}}{{board.title}}{{/if}}">
+									</td>
+								</tr>
+								<tr>
+									<td class="trw" width="200">작성자</td>
+									<td style="text-align: left;">
+										{{user.username}}
+									</td>
+								</tr>
+								<tr>
+									<td class="trw" width="200">파일</td>
+									<td style="text-align: left;">
+										<input class="inputText2" type="file" style="width:100%" name="attachment">
+									</td>
+								</tr>
+								<tr>
+									<td class="trw" width="200">내용</td>
+									<td>
+										<textarea rows="30" cols="100" name="content"
+										>{{#if isModifyPage}}{{board.content}}{{/if}}</textarea>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<!-- table :e -->
+						
+						<!-- paging & search :s -->
+						<input type="button" id="cancelBtn" value="취소" class="subbtn3">
+						<input type="button" value="다시하기" class="subbtn3">
+						<span class="rightButton" >
+							<button type="button" id="submit" class="mainbtn">저장하기</button>
+						</span>
+						<!-- paging & search :e -->
+					</form>
+				</div>
+				<!-- 컨텐츠영역 txt :e -->
+
+			</div>
+			<!-- container :e -->
+
+		</div>
+		<!-- contentsWrap :e -->
+
+		
+		<!-- footerWrap :s -->
+		{{> footer/footer}}
+		<!-- footerWrap :e -->
+	</div>
+</body>
+</html>

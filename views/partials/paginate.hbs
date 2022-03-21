@@ -1,0 +1,17 @@
+		            <ul class="paginate">
+						{{#if meta.prevPage}}
+							<li class="dir prev">
+								<a href="{{queryString meta meta.prevPage}}" title="이전페이지로 이동">«</a>
+							</li>
+						{{/if}}
+						{{#for meta.startPage (plus meta.endPage 1) 1}}
+	            			<li {{#ifCond @index '==' ../meta.currentPage}}class="active"{{/ifCond}}>
+            					<a href="{{queryString ../meta @index}}" title="{{@index}}페이지">{{@index}}</a>
+     						</li>
+						{{/for}}
+						{{#if meta.nextPage}}
+	            			<li class="dir next">
+								<a href="{{queryString meta meta.nextPage}}"title="다음페이지로 이동">»</a>
+							</li>
+						{{/if}}
+					</ul>

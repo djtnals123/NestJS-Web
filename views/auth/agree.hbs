@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="shortcut icon" href="/img/logo.png">
+<title>Sumin Lecture</title>
+<link rel="stylesheet" type="text/css" href="/css/normalize.css">
+<link rel="stylesheet" type="text/css" href="/css/join.css">
+<link rel="stylesheet" type="text/css" href="/css/font.css">
+
+<script src="/js/jquery.min.js"></script>
+<script type="text/javascript">
+	function searchParam(key) {
+		return new URLSearchParams(location.search).getAll(key);
+	};
+
+	$(document).ready(function () {
+		$("#submit").on('click', function() {
+			submit();
+		});
+
+		$("#cancelBtn").on('click', function() {
+			window.location.href = 'signin';
+		});
+	});
+		
+	async function submit() {
+		formData = new FormData($('#agreeFrm')[0]);
+		url = window.location;
+		option = {
+			method: "POST",
+			headers: {
+				'Content-Type': 'application/json',
+				'CSRF-Token': '{{csrfToken}}'
+			},
+			body: JSON.stringify(Object.fromEntries(formData))
+		};
+
+		const res = await fetch(url, option); 
+		const result = await res.json();
+
+		if(res.status === 200 || res.status === 201) {
+			window.location.href = result.redirect;
+		} else {
+			alert(result.message);
+		}
+	}
+
+
+
+</script>
+<style type="text/css">
+	#joinFrm label.error {
+		color: #ff0000;
+		display: none;
+	}
+</style>
+<title>Sumin Lecture</title>
+</head>
+<body>
+	<!-- wrap :s -->
+	<div id="wrap">
+		<!-- header :s -->
+		{{> header/header_main}}
+		<!-- header :e -->
+
+		<!-- container :s -->
+		<div id="container">
+			<div id="content1">
+				<h4>개인정보처리취급방침</h4>
+				<fieldset class="text_area" style="letter-spacing:0.1em;word-spacing: 0.2em;line-height: 1.5">
+				가나다라마바사아자차카타파하
+				
+				</fieldset>
+				<form id="agreeFrm" action="agree" method="post">
+					<label for="agree">동의합니다.</label><input id="agree" name="agree" type="checkbox">
+					<fieldset class="login_form">
+						<input id="cancelBtn" type="button" title="취소" alt="취소" value="취소" class="btn_cancel">
+						<input id="submit" type="button" title="전송" alt="전송" value="전송" class="btn_login">
+					</fieldset>
+				</form>
+			</div>
+		</div>
+		<!-- container :e -->
+
+		<!-- footer :s -->
+		{{> footer/footer_main}}
+		<!-- footer :e	 -->
+
+	
+
+	</div>
+<!-- wrap :e -->
+</body>
+</html>

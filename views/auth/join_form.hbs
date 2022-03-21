@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="shortcut icon" href="/img/logo.png">
+<title>ADRM</title>
+<link rel="stylesheet" type="text/css" href="/css/normalize.css">
+<link rel="stylesheet" type="text/css" href="/css/join.css">
+<link rel="stylesheet" type="text/css" href="/css/font.css">
+
+<script src="/js/jquery.min.js"></script>
+<script>
+$(document).ready(function () {
+	history.replaceState({}, null, location.pathname);
+
+	$("#submit").on('click', function() {
+		submit();
+	});
+	$("#cancelBtn").on('click', function() {
+		location.href='agree';
+	
+	});
+});
+	
+function submit() {
+    $.ajax({
+        type: {{#if isModifyPage}}'PATCH'{{else}}'POST'{{/if}},
+		headers: { 'CSRF-Token': '{{csrfToken}}' },
+        data: $('#joinFrm').serialize(),
+        success: function(result){ 
+			window.location.href=result.redirect;
+        },
+        error: function(err){
+			message = Array.isArray(err.responseJSON.message) ? err.responseJSON.message[0] : err.responseJSON.message;
+			alert(message);
+        }
+  	});
+}
+
+</script>
+<style type="text/css">
+	#joinFrm label.error {
+		color: #ff0000;
+		display: none;
+	}
+</style>
+<title>Sumin Lecture</title>
+</head>
+<body>
+	<!-- wrap :s -->
+	<div id="wrap">
+		<!-- header :s -->
+		{{> header/header_main}}
+		<!-- header :e -->
+
+		<!-- container :s -->
+		<div id="container">
+			<div id="content">
+				<h4>회원가입</h4>
+				<form id="joinFrm" name="joinFrm" target="_top">
+					<table class="tbl_basic center">
+						<tbody>
+							<tr>
+								<td class="trw1" >ID</td>
+								<td class="trw" >
+									<div class="join_input_row">
+										<span class="input_box">
+											<label for="id" id="label_id_area" class="lbl">ID</label>
+											<input type="text" name="username" class="int" maxlength="30" 
+												{{#if isModifyPage}}value="{{user.username}}" disabled{{/if}}> 
+										</span>
+									</div>
+									<label for="id" class="error"></label>
+								</td>
+							</tr>
+							<tr>
+								<td class="trw1" >비밀번호</td>
+								<td class="trw" >
+									<div class="join_input_row">
+										<span class="input_box">
+											<label for="pw" id="label_pw_area" class="lbl">Password</label>
+											<input type="password" name="password" class="int" maxlength="30" >
+										</span>
+									</div>
+									<label for="pw" class="error"></label>
+								</td>
+							</tr>
+							<tr>
+								<td class="trw1" >비밀번호 확인</td>
+								<td class="trw" >
+									<div class="join_input_row">
+										<span class="input_box">
+											<label for="pw" id="label_pw_area" class="lbl">Password</label>
+											<input type="password" name="confirm_password" class="int" maxlength="30" >
+										</span>
+									</div>
+									<label for="confirm_pw" class="error"></label>
+								</td>
+							</tr>
+							<tr>
+								<td class="trw1" >E-MAIL</td>
+								<td class="trw" >
+									<div class="join_input_row">
+										<span class="input_box">
+											<label for="id" id="label_id_area" class="lbl">ID</label>
+											<input type="text" id="email" name="email" class="int" maxlength="30" 
+												value="{{user.email}}">
+										</span>
+									</div>
+									<label for="email" class="error"></label>
+								</td>
+							</tr>
+							<tr>
+								<td class="trw1" >이름</td>
+								<td class="trw" >
+									<div class="join_input_row">
+										<span class="input_box">
+											<label for="id" id="label_id_area" class="lbl">ID</label>
+											<input type="text" id="name" name="name" class="int" maxlength="30"
+												value="{{user.name}}">
+										</span>
+									</div>
+									<label for="name" class="error"></label>
+								</td>
+							</tr>
+							<tr>
+								<td class="trw1" >병원선택</td>
+								<td class="trw" >
+									<select id="hospital" name="hospital" class="select_box">
+										<option value="S"{{#ifCond user.hospital '===' 'S'}} selected{{/ifCond}}>
+											서울대학교 병원
+										</option>
+										<option value="K"{{#ifCond user.hospital '===' 'K'}} selected{{/ifCond}}>
+											고려대학교 병원
+										</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td class="trw1" >회원형태</td>
+								<td class="trw" >
+									<div class="none_input_row" id="select_roll">
+										<span class="chkbox_area"><input id="role1" type="checkbox" name="roles" value="patient" 
+											{{#each user.roles as |item|}}
+												{{#ifCond item.role '===' 'patient'}}checked{{/ifCond}}
+											{{/each}}
+											tabindex="9" class="chkbox">환자</span>
+										<span class="chkbox_area"><input id="role2" type="checkbox" name="roles" value="doctor" 
+											{{#each user.roles as |item|}}
+												{{#ifCond item.role '===' 'doctor'}}checked{{/ifCond}}
+											{{/each}}
+											tabindex="9" class="chkbox">의사</span>
+									</div>
+									<label for="roles" class="error"></label>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<fieldset class="login_form">
+						<input id="submit" title="회원가입" alt="회원가입" value="회원가입" class="btn_login">
+						<input id="cancelBtn" type="button" title="취소" alt="취소" value="취소" class="btn_cancel">
+					</fieldset>
+					<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+				</form>
+			</div>
+			
+		</div>
+		<!-- container :e -->
+
+		<!-- footer :s -->
+		{{> footer/footer_main}}
+		<!-- footer :e	 -->
+
+	
+
+	</div>
+<!-- wrap :e -->
+</body>
+</html>

@@ -1,0 +1,22 @@
+		<div id="headerWrap">
+			<div id="header">
+	
+				<h1 id="logo"><a href="#"><img src="/img/layout/logo.png" alt="서울대학교 병원" /></a></h1>
+				
+				<!-- gnbWrap :s -->
+				{{#if (hasRole user 'admin')}}
+				{{> navbar/gnb_admin}}
+				{{else}}
+				{{> navbar/gnb_user}}
+				{{/if}}
+				<!-- gnbWrap :e -->
+				
+				<div id="globalWrap">
+					<ul class="global">
+						<li>안녕하세요. {{user.username}}님</li>
+						<li><a href="/auth/modify"> 회원정보수정</a></li>
+						<li><a href="/auth/logout"> 로그아웃</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
